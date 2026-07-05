@@ -1,0 +1,36 @@
+class Solution:
+    def pathsWithMaxScore(self, board: List[str]) -> List[int]:
+        MOD = 10**9 + 7
+        n = len(board)
+        dp_sum = [[-1] * n for _ in range(n)]
+        dp_cnt = [[0] * n for _ in range(n)]
+        dp_sum[n-1][n-1] = 0
+        dp_cnt[n-1][n-1] = 1
+        def update(i, j, ni, nj):
+            """Try to update (i,j) using neighbor (ni, nj)"""
+            if dp_cnt[ni][nj] == 0:
+                return
+            val = 0 if board[i][j] in ('E', 'S') else int(board[i][j])
+            new_sum = dp_sum[ni][nj] + val
+            if new_sum > dp_sum[i][j]:
+                dp_sum[i][j] = new_sum
+                dp_cnt[i][j] = dp_cnt[ni][nj]
+            elif new_sum == dp_sum[i][j]:
+                dp_cnt[i][j] = (dp_cnt[i][j] + dp_cnt[ni][nj]) % MOD
+        for i in range(n-1, -1, -1):
+            for j in range(n-1, -1, -1):
+                if board[i][j] == 'X':
+                    continue
+                if i == n-1 and j == n-1:
+                    continue  
+                dp_sum[i][j] = -1
+                dp_cnt[i][j] = 0
+                if i+1 < n:
+                    update(i, j, i+1, j)
+                if j+1 < n:
+                    update(i, j, i, j+1)
+                if i+1 < n and j+1 < n:
+                    update(i, j, i+1, j+1)
+        if dp_cnt[0][0] == 0:
+            return [0, 0]
+        return [dp_sum[0][0], dp_cnt[0][0] % MOD]
