@@ -1,0 +1,29 @@
+class Solution:
+    def sumAndMultiply(self, s: str, queries: List[List[int]]) -> List[int]:
+        MOD = 10**9 + 7
+        n = len(s)
+        cnt = [0] * (n + 1)      
+        val = [0] * (n + 1)     
+        sum_d = [0] * (n + 1)   
+        for i in range(n):
+            d = int(s[i])
+            cnt[i+1] = cnt[i]
+            val[i+1] = val[i]
+            sum_d[i+1] = sum_d[i]
+            if d != 0:
+                cnt[i+1] = cnt[i] + 1
+                val[i+1] = (val[i] * 10 + d) % MOD
+                sum_d[i+1] = sum_d[i] + d
+        pow10 = [1] * (n + 1)
+        for i in range(1, n + 1):
+            pow10[i] = pow10[i-1] * 10 % MOD
+        ans = []
+        for l, r in queries:
+            nz_count = cnt[r+1] - cnt[l]  
+            if nz_count == 0:
+                ans.append(0)
+                continue
+            x = (val[r+1] - val[l] * pow10[nz_count]) % MOD
+            digit_sum = sum_d[r+1] - sum_d[l]
+            ans.append(x * digit_sum % MOD)
+        return ans
