@@ -1,0 +1,32 @@
+class Solution:
+    def countCompleteComponents(self, n: int, edges: List[List[int]]) -> int:
+        parent = list(range(n))
+        rank = [0] * n
+        def find(x):
+            if parent[x] != x:
+                parent[x] = find(parent[x])  
+            return parent[x]
+        def union(x, y):
+            px, py = find(x), find(y)
+            if px == py:
+                return
+            if rank[px] < rank[py]:
+                px, py = py, px
+            parent[py] = px
+            if rank[px] == rank[py]:
+                rank[px] += 1
+        for a, b in edges:
+            union(a, b)
+        comp_vertices = defaultdict(int)
+        comp_edges = defaultdict(int)
+        for v in range(n):
+            comp_vertices[find(v)] += 1
+        for a, b in edges:
+            comp_edges[find(a)] += 1
+        result = 0
+        for root in comp_vertices:
+            v = comp_vertices[root]
+            e = comp_edges[root]
+            if e == v * (v - 1) // 2:
+                result += 1
+        return result
