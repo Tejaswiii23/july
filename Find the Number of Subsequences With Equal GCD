@@ -1,0 +1,25 @@
+from math import gcd
+from typing import List
+class Solution:
+    def subsequencePairCount(self, nums: List[int]) -> int:
+        MOD = 10**9 + 7
+        M = max(nums) + 1
+        dp = [[0] * M for _ in range(M)]
+        dp[0][0] = 1
+        for x in nums:
+            new_dp = [row[:] for row in dp]
+            for g1 in range(M):
+                for g2 in range(M):
+                    if dp[g1][g2] == 0:
+                        continue
+                    val = dp[g1][g2]
+                    ng1 = gcd(g1, x) if g1 != 0 else x
+                    new_dp[ng1][g2] = (new_dp[ng1][g2] + val) % MOD
+                    ng2 = gcd(g2, x) if g2 != 0 else x
+                    new_dp[g1][ng2] = (new_dp[g1][ng2] + val) % MOD
+            
+            dp = new_dp
+        ans = 0
+        for g in range(1, M):
+            ans = (ans + dp[g][g]) % MOD
+        return ans
