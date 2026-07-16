@@ -1,0 +1,17 @@
+from math import gcd
+class Solution:
+    def gcdSum(self, nums: list[int]) -> int:
+        n = len(nums)
+        prefix_gcd = []
+        current_max = 0
+        for i in range(n):
+            current_max = max(current_max, nums[i])
+            prefix_gcd.append(gcd(nums[i], current_max))
+        prefix_gcd.sort()
+        result = 0
+        left, right = 0, n - 1
+        while left < right:
+            result += gcd(prefix_gcd[left], prefix_gcd[right])
+            left += 1
+            right -= 1
+        return result
