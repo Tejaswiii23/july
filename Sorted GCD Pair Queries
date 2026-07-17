@@ -1,0 +1,29 @@
+from math import gcd
+from bisect import bisect_right
+from typing import List
+class Solution:
+    def gcdValues(self, nums: List[int], queries: List[int]) -> List[int]:
+        MAX = max(nums) + 1
+        freq = [0] * MAX
+        for x in nums:
+            freq[x] += 1
+        cnt = [0] * MAX
+        for g in range(1, MAX):
+            for multiple in range(g, MAX, g):
+                cnt[g] += freq[multiple]
+        exact = [0] * MAX
+        for g in range(MAX - 1, 0, -1):
+            pairs = cnt[g] * (cnt[g] - 1) // 2
+            exact[g] = pairs
+            for multiple in range(2 * g, MAX, g):
+                exact[g] -= exact[multiple]
+        prefix = []
+        running = 0
+        for g in range(1, MAX):
+            running += exact[g]
+            prefix.append(running)
+        ans = []
+        for q in queries:
+            idx = bisect_right(prefix, q)
+            ans.append(idx + 1)
+        return ans
